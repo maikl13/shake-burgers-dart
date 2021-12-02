@@ -6,114 +6,109 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 Color primaryColor = Color.fromARGB(255, 115, 171, 66);
 
-class StudentsList extends StatefulWidget {
+class SectionsList extends StatefulWidget {
+  Function? function;
+  SectionsList(Function function){
+    this.function=function;
+  }
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-    return StudentsState();
+    return SectionsState(function!);
   }
 }
+
+
 int selected= 0;
-class StudentsState extends State<StudentsList> {
+class SectionsState extends State<SectionsList> {
   List<Section> sectionsList = <Section>[];
 
+  Function? function;
+  SectionsState(Function function){
+    this.function=function;
+  }
+  bool init = true;
   @override
   Widget build(BuildContext context) {
-    updateListView();
+    if(init){
+      updateListView();
+
+
+      init = false;
+    }
+
 
     // TODO: implement build
-    return getStudentsList();
-  }
-
-  ListView getStudentsList() {
-    return ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: sectionsList.length,
-        itemBuilder: (context, i) {
-          return Center(
-            child: GestureDetector(
-              onTap: (){
-                setState(() {
-                  selected = i;
-                });
-              },
-              child: Container(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0xF55A335).withOpacity(i == selected? 0.1 : 0.0),
-                            spreadRadius: 0.05,
-                            blurRadius: 2,
-                            offset: Offset(0, 0), // changes position of shadow
+    return   Container(
+      color: Colors.transparent,
+      margin: EdgeInsets.only(top: 10),
+      child: SizedBox(
+        child:   ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: sectionsList.length,
+            itemBuilder: (context, i) {
+              return Center(
+                child: GestureDetector(
+                  onTap: (){
+                    setState(() {
+                      selected = i;
+                    });
+                   this. function!(i+1);
+                  },
+                  child: Container(
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: <Widget>[
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(30)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color(0xF55A335).withOpacity(i == selected? 0.1 : 0.0),
+                                spreadRadius: 0.05,
+                                blurRadius: 2,
+                                offset: Offset(0, 0), // changes position of shadow
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      child: Image(
-                        image: AssetImage(i == selected ? "images/section_selected.png" : "images/section_unselected.png"),
-                        width: 100,
-                        height: 100,
-                      ),
+                          child: Image(
+                            image: AssetImage(i == selected ? "images/section_selected.png" : "images/section_unselected.png"),
+                            width: 100,
+                            height: 100,
+                          ),
+                        ),
+                        Container(
+                            margin: EdgeInsets.all(10),
+                            child:
+                            CachedNetworkImage(
+                              placeholder: (context,url ) => const CircularProgressIndicator(),
+                              imageUrl: sectionsList[i].image,
+                              width: 35,
+                              height: 35,
+                              color: i==selected ? primaryColor:Colors.black,
+
+                            )
+
+                        )
+                      ],
                     ),
-                    Container(
-                      margin: EdgeInsets.all(10),
-                      child:
-                      CachedNetworkImage(
-                        placeholder: (context,url ) => const CircularProgressIndicator(),
-                        imageUrl: sectionsList[i].image,
-                        width: 35,
-                        height: 35,
-                        color: i==selected ? primaryColor:Colors.black,
-
-                      )
-                      /*
-                      Image(
-                        image: AssetImage("images/loading.png"),
-                        width: 35,
-                        height: 35,
-                        color: primaryColor,
-                      ),
-
-                       */
-                    )
-                  ],
+                    margin: EdgeInsets.only(left: 8, right: 8),
+                  ),
                 ),
-                margin: EdgeInsets.only(left: 8, right: 8),
-              ),
-            ),
-          );
-        });
+              );
+            }),
+
+        height: 110,
+
+      ),
+    )
+
+  ;
   }
 
-  Color isPassed(int value) {
-    switch (value) {
-      case 1:
-        return Colors.amber;
-        break;
-      case 2:
-        return Colors.red;
-        break;
-      default:
-        return Colors.amber;
-    }
-  }
 
-  Icon getIcon(int value) {
-    switch (value) {
-      case 1:
-        return Icon(Icons.check);
-        break;
-      case 2:
-        return Icon(Icons.close);
-        break;
-      default:
-        return Icon(Icons.check);
-    }
-  }
+
+
 
   void updateListView() async {
     List<Section> newList = <Section>[];
@@ -132,6 +127,8 @@ class StudentsState extends State<StudentsList> {
 
     setState(() {
       this.sectionsList = newList;
+
+
     });
   }
 
